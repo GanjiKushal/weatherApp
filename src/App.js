@@ -1,17 +1,28 @@
-import cityBg from "./assets/city.jpg"
-//import hotBg from "./assets/hot.jpg";
+import cityBg from "./assets/city.jpg";
 import coldBg from "./assets/cold.jpg";
 import Descriptions from "./compoenets/Descriptions";
 import { useEffect, useState } from "react";
 import { getFormattedWeatherData } from "./weatherService";
-
+import axios from "axios";
 
 function App() {
   const [city, setCity] = useState("Pune");
   const [weather, setWeather] = useState(null);
   const [units, setUnits] = useState("imperial");
   const [bg, setBg] = useState(cityBg);
-  
+
+  /*This is for User Location */
+  useEffect(() => {
+    getLocation();
+  }, []);
+
+  const getLocation = async () => {
+    const location = await axios.get("https://ipapi.co/json");
+    setCity(location.data.city);
+    console.log(location.data.city);
+  };
+
+  /*This is for Input Location */
   useEffect(() => {
     const fetchWeatherData = async () => {
       const data = await getFormattedWeatherData(city, units);
@@ -41,8 +52,7 @@ function App() {
   };
 
   return (
-     <div className="app" style={{ backgroundImage: `url(${bg})` }}>
-    
+    <div className="app" style={{ backgroundImage: `url(${bg})` }}>
       <div className="overlay">
         {weather && (
           <div className="container">
@@ -55,6 +65,8 @@ function App() {
               />
               <button onClick={(e) => handleUnitsClick(e)}>°F</button>
             </div>
+
+            {/*Input Location */}
             <div className="section section__temperature">
               <div className="icon">
                 <h3>{`${weather?.name},${weather?.country}`}</h3>
